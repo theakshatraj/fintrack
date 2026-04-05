@@ -1,103 +1,187 @@
-# Fintrack — Finance Dashboard
+# fintrack — Finance Dashboard
 
-A clean, interactive personal finance dashboard built as a single-file HTML application. No build tools, no dependencies to install — just open the file in a browser.
+A personal finance dashboard to track transactions, visualise spending, and simulate role-based access control. Built with React, TypeScript, Zustand, Recharts, and Tailwind CSS.
 
 ---
 
-## Live Preview
+## Preview
 
-Open `index.html` directly in any modern browser. No server required.
+| Dashboard | Transactions | Insights |
+|-----------|-------------|----------|
+| Summary cards, trend chart, pie chart, recent activity | Searchable & sortable table, admin CRUD | Spending patterns, MoM comparison, savings rate |
 
 ---
 
 ## Features
 
 ### Dashboard Overview
-- **Summary cards** — Total Balance, Income, Expenses with month-over-month deltas
-- **Balance trend line chart** — running balance plotted day by day
-- **Spending breakdown donut chart** — category-wise split with percentages
-- **Recent transactions preview** — last 5 transactions inline
+- **Summary cards** — Total Balance, Total Income, Total Expenses with month-over-month deltas
+- **Balance trend** — Line chart of running balance plotted day by day
+- **Spending breakdown** — Donut chart grouped by category with a custom HTML legend
+- **Recent transactions** — Last 5 entries inline, no extra navigation required
+- **Month picker** — Filter all dashboard data to All / January / February / March
 
 ### Transactions
-- Full transaction table with Date, Description, Category, Type, Amount
-- **Search** — real-time filtering by description or category
+- Full table with Date, Description, Category, Type (coloured dot), Amount
+- **Real-time search** — filters by description or category as you type
 - **Type filter** — All / Income / Expense toggle buttons
-- **Sort** — Date (asc/desc), Amount (asc/desc) via dropdown or clicking column headers
-- **Export JSON** — downloads all transactions as a JSON file
+- **Sorting** — Date or Amount, ascending or descending
+- **Export JSON** — downloads the full transaction list as `fintrack_transactions.json`
+- **Add / Edit / Delete** — available when role is set to Admin (modal form)
 
 ### Role-Based UI
-Roles are simulated via a dropdown in the sidebar:
+Roles are simulated on the frontend via a sidebar dropdown.
 
-| Role    | Permissions                          |
-|---------|--------------------------------------|
-| Viewer  | Read-only — no add/edit/delete       |
-| Admin   | Full access — add, edit, delete      |
+| Role   | What they can do                          |
+|--------|-------------------------------------------|
+| Viewer | Read-only — no add, edit, or delete       |
+| Admin  | Full access — add, edit, delete per row   |
 
-Switching to Admin reveals the **Add Transaction** button and inline **Edit / Delete** controls per row.
+Switching role immediately updates all UI — no page reload needed.
 
 ### Insights
-- Highest spending category with amount
-- Month-over-month expense change (% vs February)
-- Savings rate with qualitative badge (Excellent / Moderate / Low)
-- Average daily spend this month
-- Most expensive single day
-- Number of income streams and their categories
-- Monthly Income vs Expenses grouped bar chart (Jan–Mar)
+- Highest spending category with total amount
+- Month-over-month expense change (% vs previous month, with ▲/▼ indicator)
+- Savings rate with contextual badge: **Excellent** ≥ 20%, **Moderate** ≥ 10%, **Low** < 10%
+- Average daily spend for the current month
+- Most expensive single day with total
+- Number of distinct income streams and their categories
+- Monthly Income vs Expenses grouped bar chart across all three months
 
-### Extras
-- **Dark / Light mode** — toggle persists within the session; charts re-render for each theme
-- **LocalStorage persistence** — new transactions survive page refresh
-- **Responsive** — sidebar collapses on mobile, layout reflows to single column; mobile nav bar appears
-
----
-
-## Tech Decisions
-
-**Single-file HTML** — No framework, no bundler, no node_modules. The brief said "no backend dependency" and "show how you think." A single file is the most portable, immediately runnable deliverable. Any reviewer can double-click it.
-
-**Chart.js (CDN)** — Loaded from cdnjs. Handles line, doughnut, and bar charts without a build step. Lightweight and well-documented.
-
-**Vanilla JS state** — A single `state` object holds transactions, role, and filter values. For this scale, a framework's reactivity would add overhead without benefit. All renders are explicit function calls (`renderDashboard()`, `renderTable()`, `renderInsights()`), making the data flow easy to trace.
-
-**localStorage persistence** — Transactions written on every mutation. Falls back to seed data on first load or if storage is unavailable.
-
-**Mock data** — 30 realistic transactions across Jan–Mar 2026, designed to produce meaningful insights (MoM comparisons, category breakdowns, savings rate variation).
-
-**CSS variables** — Light and dark themes are a single attribute swap on `<html>`. All colors reference variables, so chart colors are the only hardcoded hex values (Chart.js canvas cannot resolve CSS variables).
+### Additional
+- **Dark / Light mode** — toggle in the sidebar, applies instantly via `data-theme` on `<html>`
+- **LocalStorage persistence** — transactions survive page refresh; falls back to seed data on first load
+- **Responsive layout** — sidebar collapses on mobile, replaced by a horizontal nav bar; cards and charts reflow to single column
 
 ---
 
-## Assumptions
+## Tech Stack
 
-- Currency is INR (₹). Swap the symbol in `fmt()` to localise.
-- Month filter on the dashboard covers Jan–Mar 2026 to match mock data range.
-- Role switching is frontend-only simulation, as specified.
-- Insights are computed against March 2026 data (the current month in the scenario) with February as the comparison period.
+| Layer | Choice | Reason |
+|-------|--------|--------|
+| Framework | React 18 + TypeScript | Type safety, component model, industry standard |
+| Build tool | Vite | Near-instant dev server, minimal config |
+| State | Zustand | Lightweight, no boilerplate, easy TypeScript integration |
+| Charts | Recharts | Declarative React API, composable primitives |
+| Styling | Tailwind CSS + CSS variables | Utility classes for layout; CSS variables for theming |
+| Icons | Lucide React | Consistent, tree-shakeable icon set |
+| Fonts | Sora + DM Mono | Sora for UI text, DM Mono for numbers and dates |
 
 ---
 
-## File Structure
+## Project Structure
 
 ```
-index.html        ← entire app (styles + markup + script)
-README.md
+src/
+├── types/
+│   └── index.ts              # Transaction, Role, FilterType, SortKey, SortDir
+├── data/
+│   └── mockData.ts           # 30 seed transactions across Jan–Mar 2026
+├── store/
+│   └── useStore.ts           # Zustand store — transactions, role, filters, theme
+├── utils/
+│   └── helpers.ts            # Pure functions: calcSummary, formatINR, getDailyBalance, etc.
+├── components/
+│   ├── layout/
+│   │   ├── Sidebar.tsx       # Desktop nav, role switcher, theme toggle
+│   │   └── MobileNav.tsx     # Horizontal pill nav for small screens
+│   ├── cards/
+│   │   ├── SummaryCard.tsx   # Single metric card with label, value, delta
+│   │   └── SummaryGrid.tsx   # 3-card grid reading from store
+│   ├── charts/
+│   │   ├── BalanceTrendChart.tsx   # Recharts LineChart — daily running balance
+│   │   ├── SpendingPieChart.tsx    # Recharts PieChart — category breakdown
+│   │   └── MonthlyBarChart.tsx     # Recharts BarChart — income vs expenses
+│   ├── transactions/
+│   │   ├── TransactionControls.tsx # Search, filter, sort, export, add button
+│   │   ├── TransactionTable.tsx    # Table with admin edit/delete actions
+│   │   └── TransactionModal.tsx    # Add / Edit modal form
+│   └── insights/
+│       └── InsightCard.tsx         # Icon + title + value + note card
+├── pages/
+│   ├── DashboardPage.tsx     # Assembles summary, charts, recent list
+│   ├── TransactionsPage.tsx  # Controls + table + modal
+│   └── InsightsPage.tsx      # 6 insight cards + bar chart
+└── App.tsx                   # Root layout, page routing, theme init
 ```
 
-All logic is in clearly separated script sections:
-- `loadData / saveData` — persistence
-- `renderDashboard / renderLineChart / renderPieChart / renderRecentTx` — dashboard page
-- `renderTable / setTypeFilter / quickSort / exportJSON` — transactions page
-- `renderInsights / renderBarChart` — insights page
-- `setRole / openModal / saveTransaction / editTx / deleteTx` — RBAC + CRUD
-- `showPage / filterMonth / toggleTheme` — navigation + UX
+---
+
+## Getting Started
+
+**Prerequisites:** Node.js 18+
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/your-username/fintrack.git
+cd fintrack
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the dev server
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+```bash
+# Build for production
+npm run build
+
+# Preview the production build
+npm run preview
+```
+
+---
+
+## State Management
+
+All application state lives in a single Zustand store (`src/store/useStore.ts`):
+
+```
+transactions    — full list, loaded from localStorage or seed data
+role            — "viewer" | "admin"
+typeFilter      — "all" | "income" | "expense"
+sortKey         — "date" | "amount" | "description" | "category"
+sortDir         — "asc" | "desc"
+searchQuery     — string, filters table in real time
+monthFilter     — "all" | "2026-01" | "2026-02" | "2026-03"
+theme           — "dark" | "light"
+```
+
+Computed values (filtered lists, summaries, chart data) are derived inside components using `useMemo` — they are never stored in state. This keeps the store minimal and ensures derived data is always in sync.
+
+---
+
+## Technical Decisions
+
+**Zustand over Redux or Context** — Redux adds significant boilerplate for a project of this size. Context causes unnecessary re-renders when any value in the context changes. Zustand gives selector-based subscriptions, TypeScript support out of the box, and no provider wrapping.
+
+**Inline styles for the sidebar, CSS variables for theming** — Tailwind cannot resolve dynamic CSS variable values in class names at runtime. The sidebar and card components use inline `style` props with `var(--bg2)`, `var(--accent)` etc. so theme changes apply instantly without rebuilding class strings.
+
+**Recharts over Chart.js** — Recharts is React-native and declarative. Chart.js requires managing canvas refs and imperative `chart.destroy()` calls. For a component-based architecture, Recharts is the cleaner fit. Note: chart colors are hardcoded hex values (not CSS variables) because SVG/canvas cannot resolve CSS custom properties.
+
+**No router (React Router / TanStack)** — with only three views and no URL-based navigation requirements, a local `activePage` state in `App.tsx` is simpler and more appropriate. Adding a router would be over-engineering.
+
+**localStorage as persistence** — a pragmatic stand-in for a real API. Transactions are written on every mutation. If storage is unavailable or the data is corrupt, the app silently falls back to the seed dataset.
 
 ---
 
 ## Edge Cases Handled
 
-- Empty state message when no transactions match filters
-- Graceful fallback if localStorage is unavailable
-- Donut/line charts destroyed before re-render to avoid canvas conflicts
-- Month deltas show "No comparison data" when previous month has no entries
-- Savings rate badge changes colour based on threshold (≥20% = good, ≥10% = moderate, <10% = low)
-- Export works even with an empty transaction list
+- Zero transactions — all charts show an empty state message instead of a broken render
+- No previous month data — delta lines show "No comparison data" instead of NaN or errors
+- Savings rate when income is zero — returns 0% to avoid division-by-zero
+- Export downloads all transactions regardless of active filters
+- Role switch is instant — Admin controls appear/disappear without page reload
+- Theme toggle applies `data-theme` to `document.documentElement` immediately on mount to prevent a flash of wrong theme
+
+---
+
+## Assumptions
+
+- Currency is INR (₹). To localise, update `formatINR()` in `src/utils/helpers.ts`
+- Mock data covers January–March 2026, matching the month picker range
+- Insights comparisons are computed against March 2026 (current month) vs February 2026
+- Role switching is frontend simulation only — in a real app, roles would be enforced server-side
