@@ -48,7 +48,7 @@ const BalanceTrendChart: React.FC<BalanceTrendChartProps> = ({ transactions }) =
                 fontFamily: 'var(--font-mono)',
                 fontSize: '12px',
               }}
-              formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Balance']}
+              formatter={(value: any) => [`₹${Number(value).toLocaleString('en-IN')}`, 'Balance']}
               labelStyle={{ color: 'var(--muted)', marginBottom: '4px' }}
             />
             <Line

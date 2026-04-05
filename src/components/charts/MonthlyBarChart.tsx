@@ -48,7 +48,7 @@ const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({ transactions, months 
                 fontFamily: 'var(--font-mono)',
                 fontSize: '12px',
               }}
-              formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`}
+              formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN')}`}
               cursor={{ fill: 'var(--bg3)', opacity: 0.4 }}
             />
             <Bar dataKey="income" fill="var(--green)" radius={[4, 4, 0, 0]} barSize={24} />

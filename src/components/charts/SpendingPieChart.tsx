@@ -52,7 +52,7 @@ const SpendingPieChart: React.FC<SpendingPieChartProps> = ({ transactions }) => 
                 fontFamily: 'var(--font-mono)',
                 fontSize: '12px',
               }}
-              formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`}
+              formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN')}`}
             />
           </PieChart>
         </ResponsiveContainer>
