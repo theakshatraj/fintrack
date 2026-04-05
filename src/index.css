@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Dark mode (default) */
+  --bg: #0f0f12;
+  --bg2: #16161c;
+  --bg3: #1e1e28;
+  --border: rgba(255, 255, 255, 0.07);
+  --border2: rgba(255, 255, 255, 0.12);
+  --text: #f0ede8;
+  --muted: #8a8799;
+  --accent: #c8f075;
+  --accent2: #7b8cde;
+  --red: #ff6b6b;
+  --green: #6bffb4;
+  --amber: #ffc96b;
+  
+  --font-sora: 'Sora', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+[data-theme="light"] {
+  --bg: #f4f2ee;
+  --bg2: #ffffff;
+  --bg3: #eae8e3;
+  --border: rgba(0, 0, 0, 0.08);
+  --border2: rgba(0, 0, 0, 0.14);
+  --text: #1a1a22;
+  --muted: #6b6980;
+  --accent: #4a7c10;
+  --accent2: #3a4db5;
+  --red: #c0392b;
+  --green: #1d8a57;
+  --amber: #b07d10;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--bg)] text-[var(--text)] transition-colors duration-300;
+    font-family: var(--font-sora);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.card {
+  @apply bg-[var(--bg2)] border border-[var(--border)] rounded-[14px] animate-fade-in;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
