@@ -2,6 +2,8 @@
 
 A personal finance dashboard to track transactions, visualise spending, and simulate role-based access control. Built with React, TypeScript, Zustand, Recharts, and Tailwind CSS.
 
+🔗 **Live Demo:** [fintrack-aksh.vercel.app](https://fintrack-aksh.vercel.app/)
+
 ---
 
 ## Preview
@@ -185,3 +187,25 @@ Computed values (filtered lists, summaries, chart data) are derived inside compo
 - Mock data covers January–March 2026, matching the month picker range
 - Insights comparisons are computed against March 2026 (current month) vs February 2026
 - Role switching is frontend simulation only — in a real app, roles would be enforced server-side
+
+---
+
+## Deployment
+
+The app is deployed on **Vercel** at [fintrack-aksh.vercel.app](https://fintrack-aksh.vercel.app/).
+
+Vercel auto-deploys from the `main` branch on every push. No environment variables are required — the app is fully client-side with no backend or API keys.
+
+To deploy your own fork:
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy from project root
+vercel
+```
+
+Or connect the repo directly in the [Vercel dashboard](https://vercel.com/new) — it auto-detects Vite and sets the correct build command (`npm run build`) and output directory (`dist`).
+
+---
